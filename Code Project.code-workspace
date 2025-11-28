@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "SchoolStudy",
+			"path": "SchoolStudy"
+		}
+	],
+	"settings": {
+		"java.debug.settings.onBuildFailureProceed": true,
+		"java.project.sourcePaths": [
+			"JAVA Project/Practice/src",
+			"JAVA Project"
+		],
+		"scm.diffDecorations": "none",
+		"scm.diffDecorationsGutterAction": "none",
+		"scm.diffDecorationsGutterPattern": {
+			"added": true
+		},
+		"scm.diffDecorationsGutterVisibility": "hover",
+		"scm.diffDecorationsIgnoreTrimWhitespace": "true"
+	}
+}
