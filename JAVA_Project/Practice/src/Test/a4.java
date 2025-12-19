@@ -1,3 +1,4 @@
+package Test;
 public class a4 {
     public static void main(String[] args) {
         String[] array = { "I","like","smelly","blue","chess"};
