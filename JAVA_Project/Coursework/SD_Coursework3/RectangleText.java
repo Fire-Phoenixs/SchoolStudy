@@ -1,4 +1,4 @@
-package Coursework.SD_Coursework3;
+package SD_Coursework3;
 
 public class RectangleText {
     public static void main(String[] args) {

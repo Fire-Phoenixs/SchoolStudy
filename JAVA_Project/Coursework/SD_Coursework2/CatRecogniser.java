@@ -1,4 +1,4 @@
-package Coursework.SD_Coursework2;
+package SD_Coursework2;
 
 import java.util.Scanner;
 
