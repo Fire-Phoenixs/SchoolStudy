@@ -1,7 +1,7 @@
 function tsp_31_cities_battle_royale()    %%定义算法主函数
     
     %% 导入TSP文件
-    [~, cities] = Read('berlin52.tsp');
+    [~, cities] = Read('eil51.tsp');
 
     %%输出题头和城市数量，由size函数导出矩阵第一维的值（即31行）
     fprintf('=== TSP问题求解 ===\n');
@@ -9,7 +9,7 @@ function tsp_31_cities_battle_royale()    %%定义算法主函数
     
     %% 大逃杀算法（BRO）参数设置
     pop_size = 100;          %% 初始化的士兵数量
-    max_iter = 10000;         %% 最大迭代次数
+    max_iter = 5000;         %% 最大迭代次数
     damage_threshold = 3;    %% 损伤阈值，即每个士兵在受到三次伤害之后死亡并重生
     learning_rate = 0.85;    %% 学习率，即有85%的概率向出现的精英学习
     tournament_size = 5;     %% 每次从五个候选者中选择对手比较解的值并造成伤害
@@ -94,7 +94,6 @@ function tsp_31_cities_battle_royale()    %%定义算法主函数
             if mod(iter, 200) == 0
                 fprintf('迭代 %d: 最优路径长度 = %.2f\n', iter, best_fitness);
             end
-            
         end
         
         convergence_curve(iter) = best_fitness;
