@@ -1,0 +1,111 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
+# ==========================================
+# 1. 准备数据 (请用您的实际数据替换这里)
+# ==========================================
+
+# 模拟数据：假设这是一个 "高强度游戏场景"
+# Time: 分钟
+# Real_SOC: 实际测量的电量 (%)
+# Pred_SOC: 您模型计算出的电量 (%)
+data_curve = pd.DataFrame({
+    'Time_min': np.linspace(0, 120, 20),
+    'Real_SOC': np.linspace(100, 20, 20) + np.random.normal(0, 0.5, 20), # 添加一点噪声模拟真实数据
+    'Pred_SOC': np.linspace(100, 22, 20)  # 模型的平滑预测
+})
+# 确保SOC不超过100或低于0
+data_curve['Real_SOC'] = data_curve['Real_SOC'].clip(0, 100)
+
+# 模拟数据：不同场景的续航时间对比 (小时)
+data_bar = pd.DataFrame({
+    'Scenario': ['Video Playback', 'Gaming (High FPS)', 'Web Browsing', 'Standby', 'GPS Navigation'],
+    'Real_Life_Hours': [8.5, 4.2, 9.1, 48.0, 5.5],
+    'Model_Predicted_Hours': [8.8, 4.0, 9.5, 50.2, 5.3]
+})
+
+# 模拟数据：模型内部的功率拆解 (单位: Watt)
+# 用于展示模型认为电都去哪儿了
+power_breakdown = pd.DataFrame({
+    'Time_min': np.linspace(0, 120, 20),
+    'P_Screen': np.random.uniform(1.5, 1.6, 20), # 屏幕常亮
+    'P_CPU': np.linspace(2.0, 3.5, 20),          # 越玩手机越热，CPU功耗可能增加
+    'P_Network': np.random.uniform(0.5, 0.8, 20),
+    'P_GPS': np.zeros(20)                        # 玩游戏没开GPS
+})
+
+# ==========================================
+# 2. 绘图设置
+# ==========================================
+plt.style.use('seaborn-v0_8-whitegrid')
+fig = plt.figure(figsize=(18, 12))
+
+
+# ------------------------------------------
+# 图 1: SOC 拟合曲线 (The "Fit" Plot)
+# ------------------------------------------
+ax1 = fig.add_subplot(2, 2, 1)
+ax1.plot(data_curve['Time_min'], data_curve['Real_SOC'], 'o-', label='Real Data', color='#1f77b4', alpha=0.8, markersize=5)
+ax1.plot(data_curve['Time_min'], data_curve['Pred_SOC'], '--', label='Model Prediction', color='#ff7f0e', linewidth=2.5)
+ax1.set_xlabel("Time (minutes)", fontsize=12)
+ax1.set_ylabel("Battery State of Charge (%)", fontsize=12)
+ax1.set_title("(A) SOC Decay Curve: Real vs. Model", fontsize=14, weight='bold')
+ax1.legend()
+ax1.set_ylim(0, 105)
+
+# ------------------------------------------
+# 图 2: 绝对误差随时间变化 (Error Analysis)
+# ------------------------------------------
+ax2 = fig.add_subplot(2, 2, 2)
+error = data_curve['Pred_SOC'] - data_curve['Real_SOC']
+ax2.bar(data_curve['Time_min'], error, width=4, color=np.where(error>0, '#d62728', '#2ca02c'), alpha=0.7)
+ax2.axhline(0, color='black', linewidth=1)
+ax2.set_xlabel("Time (minutes)", fontsize=12)
+ax2.set_ylabel("Error (Pred - Real) [%]", fontsize=12)
+ax2.set_title("(B) Prediction Error over Time", fontsize=14, weight='bold')
+# 添加统计文本
+mae = np.mean(np.abs(error))
+rmse = np.sqrt(np.mean(error**2))
+ax2.text(0.05, 0.9, f"MAE: {mae:.2f}%\nRMSE: {rmse:.2f}%", transform=ax2.transAxes, 
+         bbox=dict(facecolor='white', alpha=0.8))
+
+# ------------------------------------------
+# 图 3: 多场景总续航时间对比 (Scenario Robustness)
+# ------------------------------------------
+ax3 = fig.add_subplot(2, 2, 3)
+x = np.arange(len(data_bar))
+width = 0.35
+rects1 = ax3.bar(x - width/2, data_bar['Real_Life_Hours'], width, label='Real Measured', color='#6baed6')
+rects2 = ax3.bar(x + width/2, data_bar['Model_Predicted_Hours'], width, label='Model Predicted', color='#fd8d3c')
+
+ax3.set_ylabel('Total Discharge Time (Hours)', fontsize=12)
+ax3.set_title('(C) Total Runtime Prediction Across Scenarios', fontsize=14, weight='bold')
+ax3.set_xticks(x)
+ax3.set_xticklabels(data_bar['Scenario'], rotation=15, ha='right')
+ax3.legend()
+# 在柱状图上方标注误差百分比
+for i in range(len(data_bar)):
+    diff = (data_bar.loc[i, 'Model_Predicted_Hours'] - data_bar.loc[i, 'Real_Life_Hours']) / data_bar.loc[i, 'Real_Life_Hours']
+    ax3.text(i + width/2, data_bar.loc[i, 'Model_Predicted_Hours'] + 0.5, f"{diff:+.1%}", ha='center', fontsize=9, color='red')
+
+# ------------------------------------------
+# 图 4: 功率成分堆叠面积图 (Mechanism Explanation)
+# ------------------------------------------
+ax4 = fig.add_subplot(2, 2, 4)
+labels = ['Screen', 'CPU', 'Network', 'GPS']
+colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
+ax4.stackplot(power_breakdown['Time_min'], 
+              power_breakdown['P_Screen'], 
+              power_breakdown['P_CPU'], 
+              power_breakdown['P_Network'], 
+              power_breakdown['P_GPS'], 
+              labels=labels, colors=colors, alpha=0.8)
+ax4.set_xlabel("Time (minutes)", fontsize=12)
+ax4.set_ylabel("Power Consumption (Watts)", fontsize=12)
+ax4.set_title("(D) Model Internal Power Breakdown", fontsize=14, weight='bold')
+ax4.legend(loc='upper left')
+
+plt.tight_layout()
+plt.savefig('battery_model_validation_plots.png', dpi=300)

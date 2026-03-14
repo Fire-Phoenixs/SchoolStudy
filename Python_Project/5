@@ -1,0 +1,156 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.colors as mcolors
+import platform
+
+# ==========================================
+# 0. 自动字体配置 (防乱码)
+# ==========================================
+candidates = ['SimHei', 'Microsoft YaHei', 'SimSun', 'Arial Unicode MS', 'PingFang SC', 'Heiti TC', 'WenQuanYi Micro Hei']
+for font in candidates:
+    try:
+        plt.rcParams['font.sans-serif'] = [font]
+        break
+    except:
+        continue
+plt.rcParams['axes.unicode_minus'] = False 
+
+# ==========================================
+# 1. 数据准备
+# ==========================================
+# 原始标签
+raw_labels = [
+    'Battery Capacity\n', 
+    'Peukert Index\n', 
+    'Network Idle Power\n', 
+    'Battery Aging\n', 
+    'Fixed Standby Power\n', 
+    'Data Transmission Rate\n',
+    'Processor Leakage\n'
+]
+
+# 数据
+positive_impact = [28.57, 15.24, 11.43, 4.76, 0.0, 0.0, 2.86]
+negative_impact = [-24.76, -11.43, -3.81, 0.0, -3.81, -2.86, 0.0]
+
+# 排序
+impact_range = np.array(positive_impact) + np.abs(np.array(negative_impact))
+sorted_indices = np.argsort(impact_range)
+labels = [raw_labels[i] for i in sorted_indices]
+positive_impact = [positive_impact[i] for i in sorted_indices]
+negative_impact = [negative_impact[i] for i in sorted_indices]
+
+# ==========================================
+# 2. 绘图设置
+# ==========================================
+bg_color = '#fdfdfd'
+text_color = '#333333'
+muted_red = '#d68c8c'
+muted_green = '#8cb68c'
+
+fig, ax = plt.subplots(figsize=(10, 6), facecolor=bg_color)
+ax.set_facecolor(bg_color)
+
+y_pos = np.arange(len(labels))
+bar_height = 0.55  #稍微调细一点，给文字留空间
+
+# 绘制条形
+rects1 = ax.barh(y_pos, positive_impact, height=bar_height, align='center', 
+                 color=muted_green, label='TTE Increase', edgecolor='none')
+rects2 = ax.barh(y_pos, negative_impact, height=bar_height, align='center', 
+                 color=muted_red, label='TTE Decrease', edgecolor='none')
+
+# 数值标签
+def autolabel(rects, is_positive):
+    for rect in rects:
+        width = rect.get_width()
+        if width == 0: continue
+        label_x_pos = width + (1 if is_positive else -1)
+        ha = 'left' if is_positive else 'right'
+        ax.text(label_x_pos, rect.get_y() + rect.get_height()/2, 
+                f'{width:+.1f}%', 
+                ha=ha, va='center', color=text_color, fontsize=9, fontweight='bold')
+autolabel(rects1, True)
+autolabel(rects2, False)
+
+# ==========================================
+# 3. 核心修改：标签位置调整
+# ==========================================
+
+# 找出那个需要特殊处理的标签索引
+target_label_str = 'Battery Capacity\n'
+target_idx = -1
+
+# 生成显示用的标签列表（把原来的"电池容量"挖空）
+display_labels = []
+for i, label in enumerate(labels):
+    if label == target_label_str:
+        target_idx = i
+        display_labels.append("") # 隐藏原来的，防止重叠
+    else:
+        display_labels.append(label)
+
+ax.set_yticks(y_pos)
+ax.set_yticklabels(display_labels, fontsize=10, color=text_color)
+
+# 【关键点】手动绘制"电池容量"标签
+# 这里的 y = target_idx + 0.5 表示把它放在柱子的"头顶"上
+# x = -28 是根据红色条形图最左端的位置（约-24.76）再往左一点点
+if target_idx != -1:
+    ax.text(-35, target_idx + 0.55, target_label_str, 
+            ha='left', va='center',  # 左对齐
+            fontsize=11, color=text_color, fontweight='bold')
+
+# 扩大Y轴范围，防止上面的字被切掉
+ax.set_ylim(-0.5, len(labels) + 0.2) 
+
+# 标题和美化
+ax.set_xlabel('Change in Battery Life (TTE %)', fontsize=20, color=text_color, fontweight='bold')
+ax.set_title('Sensitivity Analysis: Impact on Battery Life\n', 
+             fontsize=14, pad=25, color=text_color, fontweight='bold')
+ax.axvline(0, color='grey', linewidth=0.8, linestyle='--')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_color('#cccccc')
+
+# 调整图例位置，避免挡住下面的字
+ax.legend(loc='lower right', frameon=False, fontsize=9)
+
+# 增加左侧边距，确保长文字不被切掉
+plt.subplots_adjust(left=0.15, right=0.95, top=0.9, bottom=0.1)
+
+fig, ax = plt.subplots(figsize=(10, 6), facecolor=bg_color)
+ax.set_facecolor(bg_color)
+
+# 计算绝对影响最大值 (作为排名的依据)
+max_impact = [max(p, abs(n)) for p, n in zip(positive_impact, negative_impact)]
+
+# 创建自定义渐变色 (从浅绿 -> 深红，或者单色渐变)
+# 这里使用低饱和度红色的深浅变化来表示“敏感度强弱”
+cmap = mcolors.LinearSegmentedColormap.from_list("custom_grad", ["#e6caca", "#c46262"])
+norm = plt.Normalize(min(max_impact), max(max_impact))
+colors = cmap(norm(max_impact))
+
+bars = ax.barh(y_pos, max_impact, height=0.6, color=colors)
+
+# 添加数值标签
+for bar in bars:
+    width = bar.get_width()
+    ax.text(width + 0.5, bar.get_y() + bar.get_height()/2, 
+            f'{width:.1f}%', 
+            ha='left', va='center', color=text_color, fontsize=10)
+
+ax.set_yticks(y_pos)
+ax.set_yticklabels(labels, fontsize=10, color=text_color)
+ax.set_xlabel('Max Sensitivity Magnitude (%)', fontsize=20, color=text_color, fontweight='bold')
+ax.set_title('Parameter Sensitivity Ranking\n', 
+             fontsize=14, pad=20, color=text_color, fontweight='bold')
+
+# 去除多余边框
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_color('#cccccc')
+plt.show()

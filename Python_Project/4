@@ -1,0 +1,48 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 使用 ggplot 风格提升学术感
+plt.style.use('ggplot') 
+
+# --- 数据 1: 额外功耗场景 ---
+scenarios = ['Gaming', 'Video Streaming', 'Video Call', 'Navigation', 'Standby']
+pred_tte_1 = [11.0, 14.5, 13.7, 12.4, 18.8]
+min_tte_1 = [9.09, 11.76, 11.1, 11.19, 16.0]
+max_tte_1 = [11.1, 15.38, 14.29, 15.38, 22.0]
+
+plt.figure(figsize=(10, 6))
+# 绘制实际范围 (垂直粗线)
+plt.vlines(scenarios, min_tte_1, max_tte_1, colors='#5DADE2', linewidth=6, 
+           label='Measured Actual TTE Range', alpha=0.5)
+# 绘制区间端点 (Cap)
+plt.scatter(scenarios, min_tte_1, color='#5DADE2', marker='_', s=200, linewidth=2)
+plt.scatter(scenarios, max_tte_1, color='#5DADE2', marker='_', s=200, linewidth=2)
+# 绘制预测点 (醒目菱形)
+plt.scatter(scenarios, pred_tte_1, color='#E74C3C', s=150, marker='D', 
+            edgecolors='black', linewidths=1, label='Model Prediction', zorder=5)
+
+plt.ylabel('Time to Empty (Hours)', fontsize=12, fontweight='bold')
+plt.title('Validation A: Scenario-based Prediction Accuracy', fontsize=14, fontweight='bold', pad=15)
+plt.legend(loc='upper left', frameon=True, fancybox=True, shadow=True, borderpad=1)
+plt.tight_layout()
+plt.savefig('error_bar_scenarios_pro.png', dpi=300)
+
+# --- 数据 2: 初始状态 (电量与亮度) ---
+soc_labels = ['100% SoC\n(50% Bri.)', '90% SoC\n(40% Bri.)', '80% SoC\n(30% Bri.)', '70% SoC\n(20% Bri.)', '60% SoC\n(20% Bri.)']
+pred_tte_2 = [18.8, 15.8, 12.5, 9.6, 8.7]
+min_tte_2 = [17.6, 14.9, 12.4, 10.0, 7.2]
+max_tte_2 = [20.3, 19.6, 15.1, 14.3, 9.9]
+
+plt.figure(figsize=(10, 6))
+# 绘制实际范围 (黄色粗线)
+plt.vlines(soc_labels, min_tte_2, max_tte_2, colors='#F4D03F', linewidth=6, 
+           label='Measured Actual TTE Range', alpha=0.6)
+# 绘制预测点 (深蓝圆点)
+plt.scatter(soc_labels, pred_tte_2, color='#2471A3', s=150, marker='o', 
+            edgecolors='black', linewidths=1, label='Model Prediction', zorder=5)
+
+plt.ylabel('Time to Empty (Hours)', fontsize=12, fontweight='bold')
+plt.title('Validation B: Initial State & Brightness Sensitivity', fontsize=14, fontweight='bold', pad=15)
+plt.legend(loc='upper right', frameon=True, fancybox=True, shadow=True, borderpad=1)
+plt.tight_layout()
+plt.savefig('error_bar_soc_pro.png', dpi=300)

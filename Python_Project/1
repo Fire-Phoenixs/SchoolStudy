@@ -1,0 +1,44 @@
+
+# 标题和美化
+ax.set_xlabel('Change in Battery Life (TTE %)', fontsize=11, color=text_color, fontweight='bold')
+ax.set_title('Sensitivity Analysis: Impact on Battery Life\n', 
+             fontsize=14, pad=25, color=text_color, fontweight='bold')
+ax.axvline(0, color='grey', linewidth=0.8, linestyle='--')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_color('#cccccc')
+
+# 调整图例位置，避免挡住下面的字
+ax.legend(loc='lower right', frameon=False, fontsize=9)
+
+# 增加左侧边距，确保长文字不被切掉
+plt.subplots_adjust(left=0.15, right=0.95, top=0.9, bottom=0.1)
+
+fig, ax = plt.subplots(figsize=(10, 6), facecolor=bg_color)
+ax.set_facecolor(bg_color)
+
+# 计算绝对影响最大值 (作为排名的依据)
+max_impact = [max(p, abs(n)) for p, n in zip(positive_impact, negative_impact)]
+
+# 创建自定义渐变色 (从浅绿 -> 深红，或者单色渐变)
+# 这里使用低饱和度红色的深浅变化来表示“敏感度强弱”
+cmap = mcolors.LinearSegmentedColormap.from_list("custom_grad", ["#e6caca", "#c46262"])
+norm = plt.Normalize(min(max_impact), max(max_impact))
+colors = cmap(norm(max_impact))
+
+bars = ax.barh(y_pos, max_impact, height=0.6, color=colors)
+
+# 添加数值标签
+for bar in bars:
+    width = bar.get_width()
+    ax.text(width + 0.5, bar.get_y() + bar.get_height()/2, 
+            f'{width:.1f}%', 
+            ha='left', va='center', color=text_color, fontsize=10)
+
+ax.set_yticks(y_pos)
+ax.set_yticklabels(labels, fontsize=10, color=text_color)
+ax.set_xlabel('Max Sensitivity Magnitude (%)', fontsize=11, color=text_color, fontweight='bold')
+ax.set_title('Parameter Sensitivity Ranking\n', 
+             fontsize=14, pad=20, color=text_color, fontweight='bold')
