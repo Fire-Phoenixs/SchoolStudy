@@ -1,4 +1,5 @@
-package SD2_Exercise2;
+import java.io.PrintWriter;
+import java.util.Arrays;
 
 public class HistoryTask extends GeneralTask {
     private String book;
@@ -18,9 +19,9 @@ public class HistoryTask extends GeneralTask {
         return this.author;
     }
 
-    public void setAuthor(String Author) {
-        this.author = author;
-    }
+    //public void setAuthor(String Author) {
+    //    this.author = author;
+    //}
 
     public int[] getChapters() {
         return this.chapters;
@@ -30,7 +31,6 @@ public class HistoryTask extends GeneralTask {
         this.chapters = chapters;
     }
 
-    // constructor
     public HistoryTask(String description, int date, String book, String author, int[] chapters) {
         super(description, date);
         this.book = book;
@@ -38,9 +38,8 @@ public class HistoryTask extends GeneralTask {
         this.chapters = chapters;
     }
 
-    // printing the information about the task
     public void print() {
-        super.print(); // print out the information using the print() method from GeneralTask
+        super.print();
         System.out.println("Book: " + book);
         System.out.println("Author: " + author);
         System.out.print("Chapters: ");
@@ -49,4 +48,30 @@ public class HistoryTask extends GeneralTask {
         }
         System.out.println();
     }
+    
+    @Override
+    public String toString() {
+        return "HistoryTask{" +
+                "description='" + getDescription() + '\'' +
+                ", date=" + getDate() +
+                ", book='" + book + '\'' +
+                ", author='" + author + '\'' +
+                ", chapters=" + Arrays.toString(chapters) +
+                '}';
+    }
+
+    @Override
+    public void save(PrintWriter out) {
+        out.write("HistoryTask\n");
+        out.write(getDescription() + "\n");
+        out.write(getDate() + "\n");
+        out.write(book + "\n");
+        out.write(author + "\n");
+        StringBuilder chaptersStr = new StringBuilder();
+        for (int c : chapters) {
+            chaptersStr.append(c).append(",");
+        }
+        out.write(chaptersStr.toString() + "\n");
+    }
+
 }

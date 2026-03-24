@@ -1,4 +1,5 @@
-package SD2_Exercise2;
+import java.io.PrintWriter;
+import java.util.Arrays;
 
 public class CSTask extends GeneralTask {
     private int problemSheet;
@@ -37,5 +38,28 @@ public class CSTask extends GeneralTask {
             System.out.print(p + " ");
         }
         System.out.println();
+    }
+
+    @Override
+    public String toString() {
+        return "CSTask{" +
+                "description='" + getDescription() + '\'' +
+                ", date=" + getDate() +
+                ", problemSheet=" + problemSheet +
+                ", problems=" + Arrays.toString(problems) +
+                '}';
+    }
+
+    @Override
+    public void save(PrintWriter out) {
+        out.write("CSTask\n");
+        out.write(getDescription() + "\n");
+        out.write(getDate() + "\n");
+        out.write(problemSheet + "\n");
+        StringBuilder problemsStr = new StringBuilder();
+        for (int p : problems) {
+            problemsStr.append(p).append(",");
+            out.write(problemsStr.toString() + "\n");
+        }
     }
 }

@@ -1,11 +1,9 @@
-package SD2_Exercise2;
+import java.io.PrintWriter;
 
 public class GeneralTask {
     private String description;
-    private int date; // For the sake of simplicity "date" is just a number.
-                      // Think of it as thenumber of days since 2026-01-01 or something like that :)
-
-    // getters and setters for the above
+    private int date;
+    
     public String getDescription() {
         return this.description;
     }
@@ -22,15 +20,27 @@ public class GeneralTask {
         this.date = date;
     }
 
-    // constructor
     public GeneralTask(String description, int date) {
         this.description = description;
         this.date = date;
     }
 
-    // printing the information about the task
     public void print() {
         System.out.println("Description: " + description);
         System.out.println("Date: " + date);
+    }
+
+    @Override
+    public String toString() {
+        return "GeneralTask{" +
+                "description='" + description + '\'' +
+                ", date=" + date +
+                '}';
+    }
+
+    public void save(PrintWriter out) {
+        out.write("GeneralTask\n");
+        out.write(description + "\n");
+        out.write(date + "\n");       
     }
 }
