@@ -1,4 +1,4 @@
-package SD2_Coursework1;
+package src.SD2_Coursework1;
 
 import java.util.ArrayList;
 import java.util.Scanner;

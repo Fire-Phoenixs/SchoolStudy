@@ -1,4 +1,4 @@
-package SD1_Coursework1.src;                                                                                                           //package declaration
+package src.SD1_Coursework1;                                                                                                           //package declaration
 
 import java.util.Scanner;                                                                                                     //importing Scanner class for user input
 public class RegularShapeArea {                                                                                                                    //class declaration

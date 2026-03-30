@@ -1,4 +1,4 @@
-package SD2_Coursework1;
+package src.SD2_Coursework1;
 
 import java.util.*;
 
@@ -15,9 +15,10 @@ public abstract class Audio {
      * @param artist  the artist of the audio media
      * @param genres  the genres of the audio media
      * @param runtime the runtime of the audio media, in minutes
-     * Abstract class, so we can't create an instance of Audio
-     * Avoud redefining these elements in the subclasses
-     * By applying the concept of inhheritance, we can avoid code duplication
+     *                Abstract class, so we can't create an instance of Audio
+     *                Avoud redefining these elements in the subclasses
+     *                By applying the concept of inhheritance, we can avoid code
+     *                duplication
      */
     // Constructor for Audio class
     public Audio(String title, String artist, List<String> genres, int runtime) {
@@ -26,6 +27,7 @@ public abstract class Audio {
         this.genres = genres;
         this.runtime = runtime;
     }
+
     // Four Getters
     public String getTitle() {
         return title;
@@ -43,5 +45,3 @@ public abstract class Audio {
         return runtime;
     }
 }
-    
-

@@ -1,4 +1,4 @@
-package SD1_Coursework4;
+package src.SD1_Coursework4;
 
 public class MyInteger {
 

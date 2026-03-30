@@ -1,4 +1,4 @@
-package SD1_Coursework2;
+package src.SD1_Coursework2;
 
 import java.util.Scanner;
 

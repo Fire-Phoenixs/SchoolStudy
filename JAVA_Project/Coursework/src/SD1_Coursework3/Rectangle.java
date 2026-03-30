@@ -1,4 +1,4 @@
-package SD1_Coursework3;
+package src.SD1_Coursework3;
 
 public class Rectangle {
     protected double width;  //two protected double attributes.
