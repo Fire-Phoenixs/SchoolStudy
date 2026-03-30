@@ -1,0 +1,101 @@
+# class for representing strings using eun-length encoding (RLE)
+class RLE:
+    def __init__(self, compressedSeq):
+        # Make sure that the argument compressedSeq is actually
+        # - a list,
+        # - that list only contains pairs
+        # - first coordinate of each pair is a positive integer
+        # - second coordinate of each pair is a string of length 1
+        # - there are no neighboring pairs with the same letter, 
+        #    e.g., [(1, 'A'), (5, 'C'), (3, 'C'), (4, 'G')] would not be an ok value
+        # If the argument does not satisfy the above conditions raise a ValueError exception
+        # describing the reason for rejecting the input.
+        # You can check the type of a value by using the isinstance function. For example,
+        # isinstance(5, int) returns true, and isinstance("abc", int) returns false.     
+        if not isinstance(compressedSeq, list):
+            raise ValueError("The argument compressedSeq should be a list.")
+        for pair in compressedSeq:
+            if not isinstance(pair, tuple) or len(pair) != 2:
+                raise ValueError("The argument compressedSeq should be a list of pairs.")
+            if not isinstance(pair[0], int) or pair[0] <= 0:
+                raise ValueError("The first coordinate of each pair should be a positive integer.")
+            if not isinstance(pair[1], str) or len(pair[1]) != 1:
+                raise ValueError("The second coordinate of each pair should be a string of length 1.")
+        for i in range(len(compressedSeq) - 1):
+            if compressedSeq[i][1] == compressedSeq[i + 1][1]:
+                raise ValueError("There should be no neighboring pairs with the same letter.")
+        self.sequence = compressedSeq
+        
+    def printSeq(self):
+        print(self.sequence)
+        
+    def toString(self):
+        s = ""
+        for (count, letter) in self.sequence:
+            s += count * letter
+        return s    
+
+    def __len__(self):
+        totalLength = 0
+        for (count, _) in self.sequence:
+            totalLength += count
+        return totalLength
+
+    def __getitem__(self,  index):
+        length = len(self)
+        if index < 0:
+            index = length + index
+        if(0 <= index and index < length):
+            total = 0
+            for (count, letter) in self.sequence:
+                total += count
+                if total > index:
+                    return letter
+        else:
+            raise IndexError("RLE index out of range")
+
+
+##################################################################################
+# Below are test examples
+##################################################################################
+
+#R = RLE(77)
+#R.printSeq()
+#print(R.toString())
+
+
+R = RLE([(5,'A'), (3,'T'), (4,'C'), (1,'G'), (3,'T'), (3,'C'), (3,'A')])
+R.printSeq()
+print(R.toString())
+print("R[0] →", R[0])
+print("R[1] →", R[1])
+print("R[10] →", R[10])
+print("R[15] →", R[15])
+try:
+    print("R[100] →", R[100])
+except IndexError:
+    print("Exception raised for R[100]! (As expected. Things are working well.)")
+print("R[-5] →", R[-5])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
