@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simulate_newtons_cradle(masses, v_initial):
+    n = len(masses)
+    v = np.array(v_initial, dtype=float)
+    
+    # 定义函数collide，输入两个小球的质量和速度，返回完全弹性碰撞后两个小球的速度
+    def collide(m1, m2, v1, v2):
+        v1_new = ((m1 - m2) * v1 + 2 * m2 * v2) / (m1 + m2)
+        v2_new = ((m2 - m1) * v2 + 2 * m1 * v1) / (m1 + m2)
+        return v1_new, v2_new
+
+    # 只要存在后面小球速度大于前面小球速度的情况，就会继续发生碰撞
+    collision_happened = True
+    while collision_happened:
+        collision_happened = False
+        for i in range(n - 1): #对相邻的小球进行速度比较
+            if v[i] > v[i+1] + 1e-6: # 加一个极小值避免浮点数精度死循环
+                v[i], v[i+1] = collide(masses[i], masses[i+1], v[i], v[i+1])
+                collision_happened = True
+                
+    return v
+
+#设置小球的质量和初始速度
+masses = [3.0, 1.0, 1.0, 1.0, 1.0]
+v_initial = [1.0, 0.0, 0.0, 0.0, 0.0]
+
+#开始计算
+final_velocities = simulate_newtons_cradle(masses, v_initial)
+
+# 计算小球第一轮碰撞达到的最大高度
+# 因为设定的初始速度 v0 = 1，所以高度就等于速度的平方
+height_ratios = final_velocities ** 2
+
+# 输出结果
+print("碰撞后各小球的初速度 (单位: v0):")
+for i, v in enumerate(final_velocities):
+    print(f"小球 {i+1}: {v:.4f} v0")
+
+print("\n碰撞后各小球的最大高度 (单位: h0):")
+for i, h in enumerate(height_ratios):
+    print(f"小球 {i+1}: {h:.4f} h0")
