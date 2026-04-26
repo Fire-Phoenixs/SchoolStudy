@@ -2,6 +2,10 @@ package src.SD2_Coursework1;
 
 import java.util.*;
 
+/**
+ * The AudioDB class acts as the database managing a collection of Audio objects.
+ * It provides methods to add, print, and search the media library.
+ */
 public class AudioDB {
     private ArrayList<Audio> audioList;
     
@@ -17,16 +21,15 @@ public class AudioDB {
     }
     
     /**
-     * First of all, if there are no elements in the list, simply add them in.
-     * If there are elements in the list, then use the compareTo method to compare
-     * the dictionary order of the first element (That is, the i-th element, where
-     * the initial value of i is 0.) in the list with the added element.
-     * If the dictionary order of the added element comes after the i-th element,
-     * then set i to i + 1 and repeat the comparison.
-     * If the dictionary order of the added element is before the i-th element, then
-     * place the added element at the i-th position in the list.
-     * If the dictionary order of the added element is after all the elements in the list,
-     * then place the added element at the end of the list.
+     * Inserts the given Audio object into the list while maintaining 
+     * alphabetical (lexicographical) order based on the title.
+     * DESIGN CHOICE & LOGIC:
+     * To achieve an ordered insertion, the method checks if the list is empty first. 
+     * If not, it iterates through the list using String.compareTo(). When it finds an 
+     * existing element whose title comes alphabetically after the new element's title, 
+     * it inserts the new element at that index. If the loop finishes without finding 
+     * such an element, it appends the new element to the end of the list.
+     * @param b the Audio object to be added to the database
      */
     public void add(Audio b) {
         if (audioList.isEmpty()) {
@@ -51,8 +54,12 @@ public class AudioDB {
     }
     
     /**
-     * In order to achieve the output function, we performed type checks on each
-     * element in the list, and then specified the printing format for each type.
+     * Prints the details of each audio media in the provided list.
+     * DESIGN CHOICE:
+     * It uses getClass() to perform type checking on each element. This allows the 
+     * method to safely cast the generic Audio object to its specific subclass 
+     *  and print its unique fields in a formatted manner.
+     * @param audioList the list of audio media to be printed
      */
     
     public void printList(ArrayList<Audio> audioList) {
@@ -143,7 +150,15 @@ public class AudioDB {
         return audioList;
     }
 
-    // The search functions are implemented by iterating through the list and checking if the relevant field of each element matches the search criteria. If it does, the element is added to the result list, which is returned at the end.
+    /**
+     * Searches for audio media by matching the given title.
+     * DESIGN CHOICE:
+     * The search is implemented to be case-insensitive to improve user experience. 
+     * It converts both the search query and the audio titles to lowercase. 
+     * It uses the .contains() method to allow for partial string matching.
+     * @param title the title keyword to search for
+     * @return an ArrayList of matching Audio objects
+     */
     public ArrayList<Audio> getAudioMediaByTitle(String title) {
         ArrayList<Audio> result = new ArrayList<>();
         String ResearchTitle = title.toLowerCase();
@@ -156,7 +171,14 @@ public class AudioDB {
         return result;
     }
     
-    // To get all genres, we can use a set to store the genres, which will automatically handle duplicates. We iterate through each audio media and add all its genres to the set. Finally, we convert the set back to an ArrayList and return it.
+    /**
+     * Retrieves a list of all unique genres across all audio media in the database.
+     * DESIGN CHOICE:
+     * A HashSet is utilized internally to store the genres during iteration. 
+     * This data structure automatically handles duplicates, ensuring that the final 
+     * list contains only unique genre strings before returning it as an ArrayList.
+     * @return an ArrayList containing all unique genres
+     */
     public ArrayList<String> getAllGenres() {
         Set<String> genreSet = new HashSet<>();
         for (Audio a : audioList) {
@@ -165,7 +187,14 @@ public class AudioDB {
         return new ArrayList<>(genreSet);
     }
     
-    // To get audio media by genre, we iterate through each audio media and check if any of its genres match the search genre. If it does, we add it to the result list.
+    /**
+     * Searches for audio media that matches the specified genre.
+     * DESIGN CHOICE:
+     * The method converts the search input to lowercase to ensure case-insensitive matching. 
+     * It iterates through each audio object and checks its genre list for an exact string match.
+     * @param genre the genre to search for
+     * @return an ArrayList of matching Audio objects
+     */
     public ArrayList<Audio> getAudioMediaByGenre(String genre) {
         String ResearchGenre = genre.toLowerCase();
         ArrayList<Audio> result = new ArrayList<>();
@@ -179,7 +208,14 @@ public class AudioDB {
         return result;
     }
     
-    // To get physical media, we check the class of each audio media and add it to the result list if it is a CD, vinyl, or CD audiobook.
+    /**
+     * Retrieves all physical audio media from the database.
+     * DESIGN CHOICE:
+     * It uses getClass() to filter the collection. Only objects that are explicitly 
+     * instances of CD, Vinyl, or CDAudiobook are classified as physical media 
+     * and added to the result list.
+     * @return an ArrayList of physical Audio objects
+     */
     public ArrayList<Audio> getPhysicalMedia() {
         ArrayList<Audio> result = new ArrayList<>();
         for (Audio a : audioList) {
@@ -190,7 +226,13 @@ public class AudioDB {
         return result;
     }
     
-    // To get digital media, we check the class of each audio media and add it to the result list if it is a digital audio or digital audiobook.
+    /**
+     * Retrieves all digital audio media from the database.
+     * DESIGN CHOICE:
+     * It uses getClass() to filter the collection. Only objects that are explicitly 
+     * instances of Digital or DigitalAudiobook are classified as digital media.
+     * @return an ArrayList of digital Audio objects
+     */
     public ArrayList<Audio> getDigitalMedia() {
         ArrayList<Audio> result = new ArrayList<>();
         for (Audio a : audioList) {
@@ -201,7 +243,14 @@ public class AudioDB {
         return result;
     }
     
-    // To get music by artist, we check the class of each audio media and if it is a CD, vinyl, or digital audio, we compare the artist field with the search artist. If it matches, we add it to the result list.
+    /**
+     * Searches for music media by a specific artist.
+     * DESIGN CHOICE:
+     * The method first filters out audiobooks by checking classes (allowing only CD, Vinyl, and Digital). 
+     * Then, it performs a case-insensitive, partial-match search using .contains() on the artist's name.
+     * @param artist the artist name to search for
+     * @return an ArrayList of matching music Audio objects
+     */
     public ArrayList<Audio> getMusicByArtist(String artist) {
         String ResearchArtist = artist.toLowerCase();
         ArrayList<Audio> result = new ArrayList<>();
@@ -216,7 +265,15 @@ public class AudioDB {
         return result;
     }
     
-    // To get books by author or narrator, we check the class of each audio media and if it is a CD audiobook or digital audiobook, we compare both the author and narrator fields with the search name. If either of them matches, we add it to the result list...
+    /**
+     * Searches for audiobooks by either the author's or the narrator's name.
+     * DESIGN CHOICE:
+     * It first filters the list to include only CDAudiobook and DigitalAudiobook objects. 
+     * It then performs a case-insensitive, partial-match check against BOTH the author 
+     * (stored as artist) and the narrator fields. If either matches, the object is included.
+     * @param name the name of the author or narrator to search for
+     * @return an ArrayList of matching audiobook objects
+     */
     public ArrayList<Audio> getBooksByAuthorNarrator(String name) {
         String ResearchName = name.toLowerCase();
         ArrayList<Audio> result = new ArrayList<>();

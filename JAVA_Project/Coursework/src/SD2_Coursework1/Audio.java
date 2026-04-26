@@ -2,6 +2,16 @@ package src.SD2_Coursework1;
 
 import java.util.*;
 
+/**
+ * Abstract base class representing general audio media.
+ * DESIGN CHOICE (Minimizing Code Duplication):
+ * To ensure no unnecessary code duplication, common fields shared across all 
+ * audio types (title, artist, genres, and runtime) are centralized in this superclass. 
+ * Subclasses (CD, Vinyl, Digital) will inherit these fields and their respective getters, 
+ * eliminating the need to redefine them in every single class. 
+ * Furthermore, the class is declared as 'abstract' to fulfill the requirement that 
+ * a generic 'Audio' object cannot be instantiated directly.
+ */
 public abstract class Audio {
     private String title;
     private String artist;
@@ -9,18 +19,12 @@ public abstract class Audio {
     private int runtime;
 
     /**
-     * Constructor for Audio class
-     * 
+     * Constructor for the Audio class.
      * @param title   the title of the audio media
      * @param artist  the artist of the audio media
-     * @param genres  the genres of the audio media
-     * @param runtime the runtime of the audio media, in minutes
-     *                Abstract class, so we can't create an instance of Audio
-     *                Avoud redefining these elements in the subclasses
-     *                By applying the concept of inhheritance, we can avoid code
-     *                duplication
+     * @param genres  a list of genres associated with the audio media
+     * @param runtime the runtime of the audio media in minutes
      */
-    // Constructor for Audio class
     public Audio(String title, String artist, List<String> genres, int runtime) {
         this.title = title;
         this.artist = artist;
