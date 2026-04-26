@@ -1,7 +1,7 @@
 function tsp_31_cities_battle_royale()    %%定义算法主函数
     
     %% 导入TSP文件
-    [~, cities] = Read('berlin52.tsp');
+    [~, cities] = Read('a280.tsp');
 
     %%输出题头和城市数量，由size函数导出矩阵第一维的值（即31行）
     fprintf('=== TSP问题求解 ===\n');
